@@ -1,2 +1,2 @@
 # AutoRunOCI
-Manage instances in pre-programmed periods
+Manage(ON/OFF) instances in pre-programmed periods based in tags
