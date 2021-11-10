@@ -1,0 +1,2 @@
+59 18 * * * python3 /opt/scripts/autorun.py -ip -rg sa-saopaulo-1 -tag Periods -a Down
+01 08 * * * python3 /opt/scripts/autorun.py -ip -rg sa-saopaulo-1 -tag Periods -a Up
