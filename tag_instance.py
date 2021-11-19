@@ -23,7 +23,7 @@ def print_banner(cmd, tenancy):
         print("Tag Value     : " + assign_tag_value)
     print("Tenant Name   : " + str(tenancy.name))
     print("Tenant Id     : " + tenancy.id)
-    print("Untagged      : " + cmd.except_instance)
+    print("Untagged      : " ' '.join(x for x in cmd.except_instance))
     print("")
 
 def print_header(name):
@@ -60,7 +60,7 @@ def command_line():
         parser.add_argument('-p', default="", dest='proxy', help='Set Proxy (i.e. www-proxy-server.com:80) ')
         parser.add_argument('-cp', default="", dest='compartment', help='Filter by Compartment Name or Id')
         parser.add_argument('-rg', default="", dest='region', help='Filter by Region Name')
-        parser.add_argument('-ei', default="", dest='except_instance', help='Remove Instance of Markup')
+        parser.add_argument('-ei', default="AutoRun", nargs='+', dest='except_instance', help='Remove Instance of Markup')
         parser.add_argument('-ip', action='store_true', default=False, dest='is_instance_principals', help='Use Instance Principals for Authentication')
         parser.add_argument('-tag', default="", dest='tag', help='Tag in format - namespace.key=value or key=value')
         parser.add_argument('-action', default="", dest='action', choices=['add_defined', 'add_free', 'del_defined', 'del_free', 'list'], help='Action Type')
