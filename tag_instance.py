@@ -23,7 +23,7 @@ def print_banner(cmd, tenancy):
         print("Tag Value     : " + assign_tag_value)
     print("Tenant Name   : " + str(tenancy.name))
     print("Tenant Id     : " + tenancy.id)
-    print("Untagged      : " ' '.join(x for x in cmd.except_instance))
+    print("Untagged      : " + ' '.join(x for x in cmd.except_instance))
     print("")
 
 def print_header(name):
@@ -240,7 +240,7 @@ def handle_object(compartment, region_name, obj_name, list_object, update_object
                 defined_tags, freeform_tags, tags_process = handle_tags(arr.defined_tags, arr.freeform_tags)
                 obj_id = str(arr.name) if namespace else str(arr.id)
 
-                if arr.display_name != cmd.except_instance:
+                if not arr.display_name in cmd.except_instance:
                     if tags_process == "Added" or tags_process == "Deleted":
                         if namespace:
                             update_object(namespace, obj_id, update_modal_obj(freeform_tags=freeform_tags, defined_tags=defined_tags), retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
@@ -260,7 +260,7 @@ def handle_object(compartment, region_name, obj_name, list_object, update_object
                     'tags_process': tags_process
                 })
 
-                if cmd.except_instance != value['display_name']:
+                if not value['display_name'] in cmd.except_instance:
                     data.append(value)
                     cnt += 1
                     cnt_added += (1 if tags_process == "Added" else 0)
