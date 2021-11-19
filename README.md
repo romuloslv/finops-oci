@@ -2,6 +2,11 @@
 Manage(ON/OFF) instances in pre-programmed periods based in tags
 
 ```
+[opc@autorun scripts]$ sudo echo -e "\nexport OCI_CLI_AUTH=instance_principal" >> ~/.bashrc
+[opc@autorun scripts]$ sudo yum -y update && sudo yum -y upgrade
+[opc@autorun scripts]$ sudo yum install -y deltarpm python36-oci-cli
+[opc@autorun scripts]$ sudo timedatectl set-timezone America/Sao_Paulo
+
 [opc@autorun scripts]$ py autorun.py
 usage: autorun.py [-h] [-t CONFIG_PROFILE] [-ip] [-a ACTION] [-tag TAG]
                   [-rg FILTER_REGION] [-ignrtime] [-printocid]
