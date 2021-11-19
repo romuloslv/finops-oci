@@ -199,10 +199,8 @@ def autoscale_region(region):
                     c = c + 1
 
                 MakeLog(" - Active schedule for {}: {}".format(resource.display_name, DisplaySchedule))
-
                 if schedulehours[CurrentHour].replace(" ", "") == "*":
                     MakeLog(" - Ignoring this service for this hour")
-
                 else:
                     if resource.resource_type == "Instance":
                         if int(schedulehours[CurrentHour]) == 0 or int(schedulehours[CurrentHour]) == 1:
@@ -251,9 +249,14 @@ parser.add_argument('-tag', default="Periods", dest='tag', help='Tag to examine,
 parser.add_argument('-rg', default="", dest='filter_region', help='Filter Region')
 parser.add_argument('-ignrtime', action='store_true', default=False, dest='ignore_region_time', help='Ignore Region Time - Use Host Time')
 parser.add_argument('-printocid', action='store_true', default=False, dest='print_ocid', help='Print OCID for resources')
-
 cmd = parser.parse_args()
-if cmd.action != "All" and cmd.action != "Down" and cmd.action != "Up" or cmd.config_profile == "" and cmd.is_instance_principals == False:
+
+if not (cmd.is_instance_principals):
+    parser.print_help()
+    print("\nYou must specify action !!")
+    raise SystemExit
+
+if cmd.action != "All" and cmd.action != "Down" and cmd.action != "Up":
     parser.print_help()
     sys.exit(0)
 
