@@ -7,6 +7,7 @@
 [opc@autorun scripts]$ sudo yum -y update && sudo yum -y upgrade  
 [opc@autorun scripts]$ sudo yum install -y deltarpm python36-oci-cli  
 [opc@autorun scripts]$ sudo timedatectl set-timezone America/Sao_Paulo  
+[opc@autorun scripts]$ crontab schedule.cron  
 
 ## Usage
 
