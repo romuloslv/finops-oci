@@ -1,12 +1,16 @@
-# AutoRunOCI
-Manage(ON/OFF) instances in pre-programmed periods based in tags
+## Manage(ON/OFF) instances in pre-programmed periods based in tags
+
+
+## Prerequisites
+
+[opc@autorun scripts]$ sudo echo -e "\nexport OCI_CLI_AUTH=instance_principal" >> ~/.bashrc  
+[opc@autorun scripts]$ sudo yum -y update && sudo yum -y upgrade  
+[opc@autorun scripts]$ sudo yum install -y deltarpm python36-oci-cli  
+[opc@autorun scripts]$ sudo timedatectl set-timezone America/Sao_Paulo  
+
+## Usage
 
 ```
-[opc@autorun scripts]$ sudo echo -e "\nexport OCI_CLI_AUTH=instance_principal" >> ~/.bashrc
-[opc@autorun scripts]$ sudo yum -y update && sudo yum -y upgrade
-[opc@autorun scripts]$ sudo yum install -y deltarpm python36-oci-cli
-[opc@autorun scripts]$ sudo timedatectl set-timezone America/Sao_Paulo
-
 [opc@autorun scripts]$ py autorun.py
 usage: autorun.py [-h] [-t CONFIG_PROFILE] [-ip] [-a ACTION] [-tag TAG]
                   [-rg FILTER_REGION] [-ignrtime] [-printocid]
@@ -48,3 +52,14 @@ optional arguments:
 
 You must specify action !!
 ```
+
+## TL;DR
+
+### "x, ..., y" = daily hours tags
+
+|    Value    | Description |
+|    :----:   |    :----:   |
+| "0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0" | turn on every hour |
+| "1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1" | turn off every hour |
+| "*, *, *, *, *, *, *, 1, *, *, *, *, *, *, *, *, *, *, 0, *, *, *, *, *" | turn on at 8 am and turn off at 8 pm |
+| "*, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *" | respect the current status |
