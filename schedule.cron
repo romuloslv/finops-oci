@@ -1,6 +1,11 @@
-#57 19 * * * python3 /opt/scripts/tag_instance.py -ip -cp compartment-name -rg sa-saopaulo-1 -action add_defined -tag Periods.WeekDay="*, *, *, *, *, *, *, 1, *, *, *, *, *, *, *, *, *, *, 0, *, *, *, *, *"
-#58 19 * * * python3 /opt/scripts/tag_instance.py -ip -cp compartment-name -rg sa-saopaulo-1 -action add_defined -tag Periods.Weekend="*, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *"
+# login by instance principal in compartment "x" in region "y" with adition of tag predefined call "z" and key "w" with value "k"
+57 19 * * * python3 /opt/scripts/tag_instance.py -ip -cp compartment-name -rg sa-saopaulo-1 -action add_defined -tag Periods.WeekDay="*, *, *, *, *, *, *, 1, *, *, *, *, *, *, *, *, *, *, *, 0, *, *, *, *"
+58 19 * * * python3 /opt/scripts/tag_instance.py -ip -cp compartment-name -rg sa-saopaulo-1 -action add_defined -tag Periods.Weekend="*, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *"
+# stop sign
 59 19 * * * python3 /opt/scripts/autorun.py -ip -rg sa-saopaulo-1 -tag Periods -a Down
-#01 08 * * * python3 /opt/scripts/tag_instance.py -ip -cp compartment-name -rg sa-saopaulo-1 -action add_defined -tag Periods.WeekDay="*, *, *, *, *, *, *, 1, *, *, *, *, *, *, *, *, *, *, 0, *, *, *, *, *"
-#02 08 * * * python3 /opt/scripts/tag_instance.py -ip -cp compartment-name -rg sa-saopaulo-1 -action add_defined -tag Periods.Weekend="*, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *"
+
+# login by instance principal in compartment "x" in region "y" with adition of tag predefined call "z" and key "w" with value "k"
+01 08 * * * python3 /opt/scripts/tag_instance.py -ip -cp compartment-name -rg sa-saopaulo-1 -action add_defined -tag Periods.WeekDay="*, *, *, *, *, *, *, 1, *, *, *, *, *, *, *, *, *, *, *, 0, *, *, *, *"
+02 08 * * * python3 /opt/scripts/tag_instance.py -ip -cp compartment-name -rg sa-saopaulo-1 -action add_defined -tag Periods.Weekend="*, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *"
+# start sign
 03 08 * * * python3 /opt/scripts/autorun.py -ip -rg sa-saopaulo-1 -tag Periods -a Up
