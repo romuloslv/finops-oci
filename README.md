@@ -11,7 +11,7 @@
 ## Usage
 
 ```
-[opc@autorun scripts]$ py autorun.py
+[opc@autorun scripts]$ python3 autorun.py
 usage: autorun.py [-h] [-t CONFIG_PROFILE] [-ip] [-a ACTION] [-tag TAG]
                   [-rg FILTER_REGION] [-ignrtime] [-printocid]
 
@@ -27,7 +27,7 @@ optional arguments:
 
 You must specify action !!
 
-[opc@autorun scripts]$ py tag_instance.py
+[opc@autorun scripts]$ python3 tag_instance.py
 usage: tag_instance.py [-h] [-t CONFIG_PROFILE] [-p PROXY] [-cp COMPARTMENT]
                        [-rg REGION]
                        [-ei EXCEPT_INSTANCE [EXCEPT_INSTANCE ...]] [-ip]
