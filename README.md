@@ -1,25 +1,27 @@
-## Manage(ON/OFF) instances in pre-programmed periods based in tags
+# Manage resources in pre-programmed periods based in tags
 
+## Supported services
+
+* Compute VMs: On/Off  
+* Database VMs: On/Off
 
 ## Prerequisites
 
-[opc@autorun scripts]$ sudo echo -e "\nexport OCI_CLI_AUTH=instance_principal" >> ~/.bashrc  
-[opc@autorun scripts]$ sudo yum -y update && sudo yum -y upgrade  
-[opc@autorun scripts]$ sudo yum install -y deltarpm python36-oci-cli  
-[opc@autorun scripts]$ sudo timedatectl set-timezone America/Sao_Paulo  
-[opc@autorun scripts]$ crontab schedule.cron  
+[opc@autorun ~]$ sudo bash install.sh
 
 ## Usage
 
 ```
-[opc@autorun scripts]$ python3 autorun.py
-usage: autorun.py [-h] [-t CONFIG_PROFILE] [-ip] [-a ACTION] [-tag TAG]
-                  [-rg FILTER_REGION] [-ignrtime] [-printocid]
+[opc@autorun scripts]$ python3 auto_run.py
+usage: auto_run.py [-h] [-t CONFIG_PROFILE] [-ip] [-cp COMPARTMENT]
+                   [-a ACTION] [-tag TAG] [-rg FILTER_REGION] [-ignrtime]
+                   [-printocid]
 
 optional arguments:
   -h, --help         show this help message and exit
   -t CONFIG_PROFILE  Config file section to use (tenancy profile)
   -ip                Use Instance Principals for Authentication
+  -cp COMPARTMENT    Filter by Compartment Name or Id
   -a ACTION          Action All, Down, Up
   -tag TAG           Tag to examine, Default=Periods
   -rg FILTER_REGION  Filter Region
@@ -28,7 +30,7 @@ optional arguments:
 
 You must specify action !!
 
-[opc@autorun scripts]$ python3 tag_instance.py
+[opc@autorun scripts]$ python3 mark_tag_instance.py
 usage: tag_instance.py [-h] [-t CONFIG_PROFILE] [-p PROXY] [-cp COMPARTMENT]
                        [-rg REGION]
                        [-ei EXCEPT_INSTANCE [EXCEPT_INSTANCE ...]] [-ip]
