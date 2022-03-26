@@ -132,12 +132,12 @@ def create_signer(config_profile, is_instance_principals):
         )
         return config, signer
 
-def read_tag_namespaces(identity, tenancy):
+def read_tag_namespaces(identity, tenancy, compartments):
     try:
         print("\nReading Tag Namespaces...")
         tagnamespaces = oci.pagination.list_call_get_all_results(
             identity.list_tag_namespaces,
-            "ocid1.compartment.oc1..aaaaaaaadfrdmr7ckp2xvgj2q2hlg7gc6cmdkgfl5voaikjrwsuofzobvpoa",
+            compartments[0].id,
             lifecycle_state='ACTIVE'
         ).data
 
@@ -359,7 +359,7 @@ def main():
     print_banner(cmd, tenancy)
 
     if "defined" in cmd.action and cmd.tag:
-        read_tag_namespaces(identity, tenancy)
+        read_tag_namespaces(identity, tenancy, compartments)
 
     print("\nProcessing Regions...")
     data = []
@@ -375,11 +375,13 @@ def main():
         config['region'] = region_name
         signer.region = region_name
         compute_client = oci.core.ComputeClient(config, signer=signer)
+        database_client = oci.database.DatabaseClient(config, signer=signer)
         identity_client = oci.identity.IdentityClient(config, signer=signer)
         objectstorage_client = oci.object_storage.ObjectStorageClient(config, signer=signer)
 
         if cmd.proxy:
             compute_client.base_client.session.proxies = {'https': cmd.proxy}
+            database_client.base_client.session.proxies = {'https': cmd.proxy}
 
         availability_domains = identity_client.list_availability_domains(tenancy.id).data
 
@@ -389,6 +391,7 @@ def main():
             for compartment in compartments:
                 print("    Compartment " + str(compartment.name))
                 handle_object(compartment, region_name, "Instances", compute_client.list_instances, compute_client.update_instance, oci.core.models.UpdateInstanceDetails)
+                handle_object(compartment, region_name, "DB DB Systems", database_client.list_db_systems, database_client.update_db_system, oci.database.models.UpdateDbSystemDetails)
         except Exception as e:
             raise RuntimeError("\nError extracting Instances - " + str(e))
 
