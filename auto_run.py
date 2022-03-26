@@ -100,21 +100,31 @@ def isDeleted(state):
     return deleted
 
 def identity_read_compartments(identity, tenancy):
-    MakeLog("Loading Compartments...")
+
+    global cmd
+    MakeLog("Loading Compartments...\n" + cmd.compartment)
     try:
-        cs = oci.pagination.list_call_get_all_results(
+        compartments = oci.pagination.list_call_get_all_results(
             identity.list_compartments,
             tenancy.id,
             compartment_id_in_subtree=True,
-            retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY
         ).data
-        tenant_compartment = oci.identity.models.Compartment()
-        tenant_compartment.id = tenancy.id
-        tenant_compartment.name = tenancy.name
-        tenant_compartment.lifecycle_state = oci.identity.models.Compartment.LIFECYCLE_STATE_ACTIVE
-        cs.append(tenant_compartment)
-        MakeLog("    Total " + str(len(cs)) + " compartments loaded.")
-        return cs
+
+        compartments.append(tenancy)
+
+        filtered_compartment = []
+        for compartment in compartments:
+            if compartment.id != tenancy.id and compartment.lifecycle_state != oci.identity.models.Compartment.LIFECYCLE_STATE_ACTIVE:
+                continue
+
+            if cmd.compartment:
+                if compartment.id != cmd.compartment and compartment.name != cmd.compartment:
+                    continue
+
+            filtered_compartment.append(compartment)
+
+        print("    Total " + str(len(filtered_compartment)) + " compartments loaded.")
+        return filtered_compartment
     except Exception as e:
         raise RuntimeError("Error in identity_read_compartments: " + str(e.args))
 
@@ -154,6 +164,9 @@ def autoscale_region(region):
         
         if resource.resource_type == "Instance":
             resourceDetails = compute.get_instance(instance_id=resource.identifier, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY).data
+            resourceOk = True
+        if resource.resource_type == "DbSystem":
+            resourceDetails = database.get_db_system(db_system_id=resource.identifier, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY).data
             resourceOk = True
         
         if not isDeleted(resource.lifecycle_state) and resourceOk:
@@ -241,9 +254,51 @@ def autoscale_region(region):
                                                     errors.append(" - Error ({}) Compute VM startup for {} - {}".format(response.status, resource.display_name, response.message))
                                                     Retry = False
 
+                    if resource.resource_type == "DbSystem":
+                        # Execute On/Off operations for Database VMs
+                        if resourceDetails.shape[:2] == "VM":
+                            dbnodes = database.list_db_nodes(compartment_id=resource.compartment_id, db_system_id=resource.identifier).data
+                            for dbnodedetails in dbnodes:
+                                if int(schedulehours[CurrentHour]) == 0 or int(schedulehours[CurrentHour]) == 1:
+                                    if dbnodedetails.lifecycle_state == "AVAILABLE" and int(schedulehours[CurrentHour]) == 0:
+                                        if Action == "All" or Action == "Down":
+                                            MakeLog(" - Initiate DB VM shutdown for {}".format(resource.display_name))
+                                            Retry = True
+                                            while Retry:
+                                                try:
+                                                    response = database.db_node_action(db_node_id=dbnodedetails.id, action="STOP")
+                                                    Retry = False
+                                                    success.append(" - Initiate DB VM shutdown for {}".format(resource.display_name))
+                                                except oci.exceptions.ServiceError as response:
+                                                    if response.status == 429:
+                                                        MakeLog("Rate limit kicking in.. waiting {} seconds...".format(RateLimitDelay))
+                                                        time.sleep(RateLimitDelay)
+                                                    else:
+                                                        ErrorsFound = True
+                                                        errors.append(" - Error ({}) DB VM shutdown for {} - {}".format(response.status, resource.display_name, response.message))
+                                                        Retry = False
+                                    if dbnodedetails.lifecycle_state == "STOPPED" and int(schedulehours[CurrentHour]) == 1:
+                                        if Action == "All" or Action == "Up":
+                                            MakeLog(" - Initiate DB VM startup for {}".format(resource.display_name))
+                                            Retry = True
+                                            while Retry:
+                                                try:
+                                                    response = database.db_node_action(db_node_id=dbnodedetails.id, action="START")
+                                                    Retry = False
+                                                    success.append(" - Initiate DB VM startup for {}".format(resource.display_name))
+                                                except oci.exceptions.ServiceError as response:
+                                                    if response.status == 429:
+                                                        MakeLog("Rate limit kicking in.. waiting {} seconds...".format(RateLimitDelay))
+                                                        time.sleep(RateLimitDelay)
+                                                    else:
+                                                        ErrorsFound = True
+                                                        errors.append(" - Error ({}) DB VM startup for {} - {}".format(response.status, resource.display_name, response.message))
+                                                        Retry = False
+
 parser = argparse.ArgumentParser()
 parser.add_argument('-t', default="", dest='config_profile', help='Config file section to use (tenancy profile)')
 parser.add_argument('-ip', action='store_true', default=False, dest='is_instance_principals', help='Use Instance Principals for Authentication')
+parser.add_argument('-cp', default="", dest='compartment', help='Filter by Compartment Name or Id')
 parser.add_argument('-a', default="All", dest='action', help='Action All, Down, Up')
 parser.add_argument('-tag', default="Periods", dest='tag', help='Tag to examine, Default=Periods')
 parser.add_argument('-rg', default="", dest='filter_region', help='Filter Region')
@@ -313,5 +368,6 @@ for region_name in [str(es.region_name) for es in regions]:
     config['region'] = region_name
     signer.region = region_name
     compute = oci.core.ComputeClient(config, signer=signer)
+    database = oci.database.DatabaseClient(config, signer=signer)
     search = oci.resource_search.ResourceSearchClient(config, signer=signer)
     autoscale_region(region_name)
