@@ -1,0 +1,5 @@
+stages:
+  - action
+
+include:
+  - local: /.gitlab/ci/scaling.gitlab-ci.yml
