@@ -14,8 +14,8 @@
 ```
 [opc@autorun scripts]$ python3 auto_run.py
 usage: auto_run.py [-h] [-t CONFIG_PROFILE] [-ip] [-cp COMPARTMENT]
-                   [-a ACTION] [-tag TAG] [-rg FILTER_REGION] [-ignrtime]
-                   [-printocid]
+                   [-a ACTION] [-di DELAY] [-tag TAG] [-rg FILTER_REGION]
+                   [-ignrtime] [-printocid]
 
 optional arguments:
   -h, --help         show this help message and exit
@@ -23,6 +23,7 @@ optional arguments:
   -ip                Use Instance Principals for Authentication
   -cp COMPARTMENT    Filter by Compartment Name or Id
   -a ACTION          Action All, Down, Up
+  -di DELAY          Instance launch delay in seconds
   -tag TAG           Tag to examine, Default=Periods
   -rg FILTER_REGION  Filter Region
   -ignrtime          Ignore Region Time - Use Host Time
