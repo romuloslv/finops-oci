@@ -5,6 +5,18 @@
 * Compute VMs: On/Off  
 * Database VMs: On/Off
 
+## Variables GitLab
+
+* KEYVALUE    = Periods.WeekDay=*, *, *, *, *, *, *, 1, *, *, *, *, *, *, *, *, *, *, *, *, *, 0, *, *-Periods.Weekend=*, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *
+* ACTION      = Up/Down
+* SERVICES    = compute,database
+* COMPARTMENT = XXXXXX
+* NAMESPACE   = XXXXXX
+* PROFILE     = XXXXXX
+* REGION      = XXXXXX
+* TIME        = XXXXXX
+* UNTAGGED    = XXXXXX
+
 ## Prerequisites
 
 [opc@autorun ~]$ sudo bash install.sh
