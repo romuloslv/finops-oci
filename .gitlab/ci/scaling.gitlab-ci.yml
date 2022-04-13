@@ -30,6 +30,13 @@ scaling:
                                   -tag $NAMESPACE
                                   -a $ACTION
                                   -di $TIME
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+      - script_failure
+      - unknown_failure
+      - api_failure
   only:
     refs:
       - schedules
