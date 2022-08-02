@@ -21,7 +21,7 @@
 
 ## Variables GitLab
 
-OCI_CONFIG_PROFILE = XXXXXX
+OCI_CONFIG_PROFILE = XXXXXX  
 OCI_KEY_PEM        = XXXXXX
 
 ## Usage
