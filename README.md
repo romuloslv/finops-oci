@@ -6,7 +6,7 @@
 * Database VMs: On/Off
 * Load Balancer: Scaling Between(10 and 200 Mbps)
 
-## Variables GitLab
+## Variables GitLab - Schedule
 
 * KEYVALUE    = Periods.WeekDay=*, *, *, *, *, *, *, 1, *, *, *, *, *, *, *, *, *, *, *, *, *, 0, *, *-Periods.Weekend=*, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *
 * SERVICES    = compute,database,loadbalancer
@@ -18,6 +18,11 @@
 * SIZE        = XXXXXX
 * TIME        = XXXXXX
 * UNTAGGED    = XXXXXX
+
+## Variables GitLab
+
+OCI_CONFIG_PROFILE = XXXXXX
+OCI_KEY_PEM        = XXXXXX
 
 ## Usage
 
