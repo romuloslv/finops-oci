@@ -30,6 +30,7 @@ scaling:
                                   -tag $NAMESPACE
                                   -a $ACTION
                                   -di $TIME
+                                  -sl $SIZE
   retry:
     max: 2
     when:
