@@ -9,18 +9,15 @@
 ## Variables GitLab
 
 * KEYVALUE    = Periods.WeekDay=*, *, *, *, *, *, *, 1, *, *, *, *, *, *, *, *, *, *, *, *, *, 0, *, *-Periods.Weekend=*, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *, *
-* ACTION      = Up/Down
-* SERVICES    = compute,database
+* SERVICES    = compute,database,loadbalancer
+* ACTION      = Up or Down
+* NAMESPACE   = Periods
 * COMPARTMENT = XXXXXX
-* NAMESPACE   = XXXXXX
 * PROFILE     = XXXXXX
 * REGION      = XXXXXX
+* SIZE        = XXXXXX
 * TIME        = XXXXXX
 * UNTAGGED    = XXXXXX
-
-## Prerequisites
-
-[opc@autorun ~]$ sudo bash install.sh
 
 ## Usage
 
