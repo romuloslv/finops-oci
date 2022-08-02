@@ -143,7 +143,7 @@ def autoscale_region(region):
     CurrentHour = 23 if CurrentHour == 0 else CurrentHour - 1
     MakeLog("Getting all resources supported by the search function...")
     
-    query = "query instance, dbsystem resources where (definedTags.namespace = '{}') sorted by displayName desc".format(PredefinedTag)
+    query = "query instance, dbsystem, loadbalancer resources where (definedTags.namespace = '{}') sorted by displayName desc".format(PredefinedTag)
     sdetails = oci.resource_search.models.StructuredSearchDetails()
     sdetails.query = query
     result = search.search_resources(search_details=sdetails, limit=1000, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY).data
@@ -165,6 +165,9 @@ def autoscale_region(region):
             resourceOk = True
         if resource.resource_type == "DbSystem":
             resourceDetails = database.get_db_system(db_system_id=resource.identifier, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY).data
+            resourceOk = True
+        if resource.resource_type == "LoadBalancer":
+            resourceDetails = loadbalancer.get_load_balancer(load_balancer_id=resource.identifier, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY).data
             resourceOk = True
 
         if not isDeleted(resource.lifecycle_state) and resourceOk:
@@ -297,12 +300,46 @@ def autoscale_region(region):
                                                         errors.append(" - Error ({}) DB VM startup for {} - {}".format(response.status, resource.display_name, response.message))
                                                         Retry = False
 
+                    if resource.resource_type == "LoadBalancer":
+                        requestedShapeMin = resourceDetails.shape_details.minimum_bandwidth_in_mbps
+                        requestedShapeMax = resourceDetails.shape_details.maximum_bandwidth_in_mbps
+
+                        if requestedShapeMin >= 10 and requestedShapeMax <= 200:
+                            if Action == "All" or Action == "Down":
+                                detailsShape = oci.load_balancer.models.ShapeDetails(minimum_bandwidth_in_mbps=int(SizeLoadBalancer), maximum_bandwidth_in_mbps=int(SizeLoadBalancer))
+                                details = oci.load_balancer.models.UpdateLoadBalancerShapeDetails(shape_name=resourceDetails.shape_name, shape_details=detailsShape)
+
+                                MakeLog(" - Downsizing loadbalancer from {} to {}".format(requestedShapeMax, requestedShapeMin))
+                                try:
+                                    loadbalancer.update_load_balancer_shape(load_balancer_id=resource.identifier, update_load_balancer_shape_details=details,
+                                                                            retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+                                except oci.exceptions.ServiceError as response:
+                                    MakeLog(" - Error Downsizing: {}".format(response.message))
+                                    errors.append(" - Error ({}) Integration Service startup for {}".format(response.message, resource.display_name))
+
+
+                            if Action == "All" or Action == "Up":
+                                detailsShape = oci.load_balancer.models.ShapeDetails(minimum_bandwidth_in_mbps=int(SizeLoadBalancer), maximum_bandwidth_in_mbps=int(SizeLoadBalancer))
+                                details = oci.load_balancer.models.UpdateLoadBalancerShapeDetails(shape_name=resourceDetails.shape_name, shape_details=detailsShape)
+
+                                MakeLog(" - Upsizing loadbalancer from {} to {}".format(requestedShapeMin, int(SizeLoadBalancer)))
+                                try:
+                                    loadbalancer.update_load_balancer_shape(load_balancer_id=resource.identifier, update_load_balancer_shape_details=details,
+                                                                            retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+                                except oci.exceptions.ServiceError as response:
+                                    MakeLog(" - Error Upsizing: {} ".format(response.message))
+                                    errors.append(" - Error ({}) Integration Service startup for {}".format(response.message, resource.display_name))
+
+                        else:
+                            MakeLog(" - Error {}: requested shape {} does not exists".format(resource.display_name, requestedShapeMax))
+
 parser = argparse.ArgumentParser()
 parser.add_argument('-t', default="", dest='config_profile', help='Config file section to use (tenancy profile)')
 parser.add_argument('-ip', action='store_true', default=False, dest='is_instance_principals', help='Use Instance Principals for Authentication')
 parser.add_argument('-cp', default="", dest='compartment', help='Filter by Compartment Name or Id')
 parser.add_argument('-a', default="All", dest='action', help='Action All, Down, Up')
 parser.add_argument('-di', default="0", dest='delay', help='Instance launch delay in seconds')
+parser.add_argument('-sl', default="", dest='size', help='Instance launch delay in seconds')
 parser.add_argument('-tag', default="Periods", dest='tag', help='Tag to examine, Default=Periods')
 parser.add_argument('-rg', default="", dest='filter_region', help='Filter Region')
 parser.add_argument('-ignrtime', action='store_true', default=False, dest='ignore_region_time', help='Ignore Region Time - Use Host Time')
@@ -317,6 +354,7 @@ filter_region = cmd.filter_region
 Action = cmd.action
 PredefinedTag = cmd.tag
 StartRateLimitDelay = cmd.delay
+SizeLoadBalancer = cmd.size
 
 start_time = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
@@ -346,6 +384,7 @@ try:
     MakeLog("Action        : " + Action)
     MakeLog("Tag           : " + PredefinedTag)
     MakeLog("Delay         : " + StartRateLimitDelay)
+    MakeLog("Size LB       : " + SizeLoadBalancer)
 
     if cmd.filter_region:
         MakeLog("Filter Region : " + cmd.filter_region)
@@ -369,5 +408,6 @@ for region_name in [str(es.region_name) for es in regions]:
     signer.region = region_name
     compute = oci.core.ComputeClient(config, signer=signer)
     database = oci.database.DatabaseClient(config, signer=signer)
+    loadbalancer = oci.load_balancer.LoadBalancerClient(config, signer=signer)
     search = oci.resource_search.ResourceSearchClient(config, signer=signer)
     autoscale_region(region_name)
