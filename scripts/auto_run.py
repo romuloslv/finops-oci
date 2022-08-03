@@ -143,9 +143,10 @@ def autoscale_region(region):
     CurrentHour = 23 if CurrentHour == 0 else CurrentHour - 1
     MakeLog("Getting all resources supported by the search function...")
     
-    query = "query instance, dbsystem, loadbalancer resources where (definedTags.namespace = '{}') sorted by displayName desc".format(PredefinedTag)
+    query = "query instance, dbsystem, loadbalancer resources where (definedTags.namespace = '{}') sorted by compartmentId desc".format(PredefinedTag)
     sdetails = oci.resource_search.models.StructuredSearchDetails()
     sdetails.query = query
+    sdetails.matching_context_type = "NONE"
     result = search.search_resources(search_details=sdetails, limit=1000, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY).data
     total_resources += len(result.items)
     count = 0
@@ -309,7 +310,7 @@ def autoscale_region(region):
                                 detailsShape = oci.load_balancer.models.ShapeDetails(minimum_bandwidth_in_mbps=int(SizeLoadBalancer), maximum_bandwidth_in_mbps=int(SizeLoadBalancer))
                                 details = oci.load_balancer.models.UpdateLoadBalancerShapeDetails(shape_name=resourceDetails.shape_name, shape_details=detailsShape)
 
-                                MakeLog(" - Downsizing loadbalancer from {} to {}".format(requestedShapeMax, requestedShapeMin))
+                                MakeLog(" - Downsizing loadbalancer from {} to {}".format(requestedShapeMax, int(SizeLoadBalancer)))
                                 try:
                                     loadbalancer.update_load_balancer_shape(load_balancer_id=resource.identifier, update_load_balancer_shape_details=details,
                                                                             retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
