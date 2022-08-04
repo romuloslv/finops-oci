@@ -334,32 +334,37 @@ def autoscale_region(region):
                         else:
                             MakeLog(" - Error {}: requested shape {} does not exists".format(resource.display_name, requestedShapeMax))
 
+# MAIN
 parser = argparse.ArgumentParser()
 parser.add_argument('-t', default="", dest='config_profile', help='Config file section to use (tenancy profile)')
 parser.add_argument('-ip', action='store_true', default=False, dest='is_instance_principals', help='Use Instance Principals for Authentication')
 parser.add_argument('-cp', default="", dest='compartment', help='Filter by Compartment Name or Id')
-parser.add_argument('-a', default="All", dest='action', help='Action All, Down, Up')
+parser.add_argument('-a', default="", dest='action', help='Action All, Down, Up')
 parser.add_argument('-di', default="0", dest='delay', help='Instance launch delay in seconds')
-parser.add_argument('-sl', default="", dest='size', help='Instance launch delay in seconds')
+parser.add_argument('-sl', default="", dest='size', help='Load Balancer size in MBs')
 parser.add_argument('-tag', default="Periods", dest='tag', help='Tag to examine, Default=Periods')
 parser.add_argument('-rg', default="", dest='filter_region', help='Filter Region')
 parser.add_argument('-ignrtime', action='store_true', default=False, dest='ignore_region_time', help='Ignore Region Time - Use Host Time')
 parser.add_argument('-printocid', action='store_true', default=False, dest='print_ocid', help='Print OCID for resources')
 cmd = parser.parse_args()
 
+if not (cmd.action):
+    parser.print_help()
+    print("\nYou must specify action !!")
+    raise SystemExit
+
 if cmd.action != "All" and cmd.action != "Down" and cmd.action != "Up":
     parser.print_help()
-    sys.exit(0)
+    print("\nYou must specify action !!")
+    raise SystemExit
 
 filter_region = cmd.filter_region
 Action = cmd.action
 PredefinedTag = cmd.tag
 StartRateLimitDelay = cmd.delay
 SizeLoadBalancer = cmd.size
-
 start_time = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
-# MAIN
 print_header("Running Auto Run")
 config, signer = create_signer(cmd.config_profile, cmd.is_instance_principals)
 compartments = []
