@@ -4,7 +4,7 @@
 
 * Compute VMs: On/Off  
 * Database VMs: On/Off
-* Load Balancer: Scaling Between(10 and 200 Mbps)
+* Load Balancer: Scaling Between(10 and 8000 Mbps)
 
 ## Variables GitLab - Schedule
 
