@@ -39,6 +39,7 @@ optional arguments:
   -cp COMPARTMENT    Filter by Compartment Name or Id
   -a ACTION          Action All, Down, Up
   -di DELAY          Instance launch delay in seconds
+  -sl SIZE           Load Balancer size in MBs
   -tag TAG           Tag to examine, Default=Periods
   -rg FILTER_REGION  Filter Region
   -ignrtime          Ignore Region Time - Use Host Time
