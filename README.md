@@ -28,12 +28,11 @@ OCI_KEY_PEM        = XXXXXX
 
 ```
 [opc@autorun scripts]$ python3 auto_run.py
-usage: auto_run.py [-h] [-t CONFIG_PROFILE] [-ip] [-cp COMPARTMENT]
-                   [-a ACTION] [-di DELAY] [-tag TAG] [-rg FILTER_REGION]
-                   [-ignrtime] [-printocid]
+usage: auto_run.py [-h] [-t CONFIG_PROFILE] [-ip] [-cp COMPARTMENT] [-a ACTION] [-di DELAY] [-sl SIZE]
+                   [-tag TAG] [-rg FILTER_REGION] [-ignrtime] [-printocid]
 
 optional arguments:
-  -h, --help         show this help message and exit
+  -h, --help         Show this help message and exit
   -t CONFIG_PROFILE  Config file section to use (tenancy profile)
   -ip                Use Instance Principals for Authentication
   -cp COMPARTMENT    Filter by Compartment Name or Id
@@ -48,27 +47,28 @@ optional arguments:
 You must specify action !!
 
 [opc@autorun scripts]$ python3 mark_tag_instance.py
-usage: tag_instance.py [-h] [-t CONFIG_PROFILE] [-p PROXY] [-cp COMPARTMENT]
-                       [-rg REGION]
-                       [-ei EXCEPT_INSTANCE [EXCEPT_INSTANCE ...]] [-ip]
-                       [-tag TAG]
-                       [-action {add_defined,add_free,del_defined,del_free,list}]
-                       [-output {list,json,summary}]
+usage: mark_tag_instance.py [-h] [-t CONFIG_PROFILE] [-p PROXY] [-cp COMPARTMENT] [-rg REGION] [-ip] [-dt]
+                            [-tag TAG] [-utag EXCEPT_INSTANCE [EXCEPT_INSTANCE ...]] [-tagseperator TAGSEPERATOR]
+                            [-action {add_defined,add_free,del_defined,del_free,list}] [-output {list,json,summary}]
+                            [-force] [-service SERVICE] [-filter_by_name FILTER_BY_NAME]
 
 optional arguments:
-  -h, --help            show this help message and exit
-  -t CONFIG_PROFILE     Config file section to use (tenancy profile)
-  -p PROXY              Set Proxy (i.e. www-proxy-server.com:80)
-  -cp COMPARTMENT       Filter by Compartment Name or Id
-  -rg REGION            Filter by Region Name
-  -ei EXCEPT_INSTANCE [EXCEPT_INSTANCE ...]
-                        Remove Instance of Markup, Default=AutoRun
-  -ip                   Use Instance Principals for Authentication
-  -tag TAG              Tag in format - namespace.key=value or key=value
-  -action {add_defined,add_free,del_defined,del_free,list}
-                        Action Type
-  -output {list,json,summary}
-                        Output type, Default=summary
+  -h, --help                                   Show this help message and exit
+  -t CONFIG_PROFILE                            Config file section to use (tenancy profile)
+  -p PROXY                                     Set Proxy (i.e. www-proxy-server.com:80)
+  -cp COMPARTMENT                              Filter by Compartment Name or Id
+  -rg REGION                                   Filter by Region Name
+  -ip                                          Use Instance Principals for Authentication
+  -dt                                          Use Delegation Token for Authentication
+  -tag TAG                                     Tags in format - namespace.key=value or key=value
+                                               with comma seperator for multi tags
+  -utag EXCEPT_INSTANCE [EXCEPT_INSTANCE ...]  Remove Instance of Markup
+  -tagseperator TAGSEPERATOR                   Tag Seperator for multiple tags, default=,
+  -action {add_defined,del_defined,list}       Action Type
+  -output {list,json,summary}                  Output type, default=summary
+  -force                                       Force execution (do not confirm)
+  -service SERVICE                             Services = all,compute,block,network,identity... default=all
+  -filter_by_name FILTER_BY_NAME               Filter service by name comma seperator for multi
 
 You must specify action !!
 ```
